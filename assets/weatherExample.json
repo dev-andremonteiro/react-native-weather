@@ -1,0 +1,44 @@
+{
+  "_comment": "http://api.openweathermap.org/data/2.5/weather?id=3465038&lang=en&units=metric&APPID=f39c4f7ecf7a43c31592fbde72cf4b7f",
+  "coord": {
+    "lon": -56.1,
+    "lat": -15.6
+  },
+  "weather": [
+    {
+      "id": 802,
+      "main": "Clouds",
+      "description": "scattered clouds",
+      "icon": "03n",
+      "_howto": "http://openweathermap.org/img/w/03n.png"
+    }
+  ],
+  "base": "stations",
+  "main": {
+    "temp": 27,
+    "pressure": 1012,
+    "humidity": 88,
+    "temp_min": 27,
+    "temp_max": 27
+  },
+  "visibility": 10000,
+  "wind": {
+    "speed": 2.1,
+    "deg": 240
+  },
+  "clouds": {
+    "all": 40
+  },
+  "dt": 1551067200,
+  "sys": {
+    "type": 1,
+    "id": 8352,
+    "message": 0.0037,
+    "country": "BR",
+    "sunrise": 1551087825,
+    "sunset": 1551132652
+  },
+  "id": 3465038,
+  "name": "Cuiaba",
+  "cod": 200
+}
