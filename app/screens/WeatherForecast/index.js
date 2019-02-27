@@ -89,28 +89,28 @@ export default class WeatherForecast extends React.Component {
     let screenWidth = Dimensions.get("window").width;
 
     let forecastHours = [
-      { hour: "Now", simbol: "%¨&", temp: "34" },
-      { hour: "15", simbol: "%¨&", temp: "36" },
-      { hour: "16", simbol: "*@!", temp: "33" },
-      { hour: "17", simbol: "%¨&", temp: "34" },
-      { hour: "18", simbol: "%¨&", temp: "36" },
-      { hour: "19", simbol: "*@!", temp: "33" },
-      { hour: "20", simbol: "%¨&", temp: "34" },
-      { hour: "21", simbol: "%¨&", temp: "36" },
-      { hour: "22", simbol: "*@!", temp: "33" }
+      { hour: "Now", simbol: "12", temp: "34" },
+      { hour: "15", simbol: "12", temp: "36" },
+      { hour: "16", simbol: "225", temp: "33" },
+      { hour: "17", simbol: "12", temp: "34" },
+      { hour: "18", simbol: "12", temp: "36" },
+      { hour: "19", simbol: "225", temp: "33" },
+      { hour: "20", simbol: "12", temp: "34" },
+      { hour: "21", simbol: "12", temp: "36" },
+      { hour: "22", simbol: "225", temp: "33" }
     ];
 
     let forecastDays = [
-      { day: "Sexta-Feira", simbol: "$#$", max: "28", min: "19" },
-      { day: "Sexta-Feira", simbol: "$#$", max: "24", min: "19" },
-      { day: "Sexta-Feira", simbol: "$#$", max: "24", min: "17" },
-      { day: "Sexta-Feira", simbol: "$#$", max: "32", min: "21" },
-      { day: "Sexta-Feira", simbol: "$#$", max: "36", min: "24" },
-      { day: "Sexta-Feira", simbol: "$#$", max: "25", min: "19" },
-      { day: "Sexta-Feira", simbol: "$#$", max: "32", min: "21" },
-      { day: "Sexta-Feira", simbol: "$#$", max: "36", min: "24" },
-      { day: "Sexta-Feira", simbol: "$#$", max: "25", min: "19" },
-      { day: "Sexta-Feira", simbol: "$#$", max: "25", min: "19" }
+      { day: "Sexta-Feira", simbol: "659", max: "28", min: "19" },
+      { day: "Sexta-Feira", simbol: "659", max: "24", min: "19" },
+      { day: "Sexta-Feira", simbol: "659", max: "24", min: "17" },
+      { day: "Sexta-Feira", simbol: "659", max: "32", min: "21" },
+      { day: "Sexta-Feira", simbol: "659", max: "36", min: "24" },
+      { day: "Sexta-Feira", simbol: "659", max: "25", min: "19" },
+      { day: "Sexta-Feira", simbol: "659", max: "32", min: "21" },
+      { day: "Sexta-Feira", simbol: "659", max: "36", min: "24" },
+      { day: "Sexta-Feira", simbol: "659", max: "25", min: "19" },
+      { day: "Sexta-Feira", simbol: "659", max: "25", min: "19" }
     ];
 
     let forecastDetails = [
