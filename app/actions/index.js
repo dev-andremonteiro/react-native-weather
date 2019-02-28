@@ -33,7 +33,6 @@ export function fetchWeatherData(id) {
       .then(data => {
         if (data.cod === 200 || data.cod === "200") {
           dispatch(weatherSuccess(data));
-
           return fetch(
             `http://api.openweathermap.org/data/2.5/forecast?id=${id}&lang=en&units=metric&APPID=${secret_token}`
           );

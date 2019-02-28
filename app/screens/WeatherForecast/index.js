@@ -28,6 +28,7 @@ const days = [
 ];
 
 function capitalizeFirstLetter(string) {
+  if (!string) return;
   let words = [];
   string.split(" ").forEach(word => {
     words.push(word[0].toUpperCase() + word.slice(1));
@@ -73,7 +74,12 @@ class WeatherForecast extends React.Component {
     this.setState({ cityList });
 
     //FETCHING PAGE 0 DATA
-    this.props.fetchData(this.state.cityList[0].id.toString());
+    if (!this.props.weather.dt) {
+      let x = this.transformDate(this.props.weather.dt);
+      if ((x - new Date()) / 1000 / 60 / 60 / 24 < -0.125)
+        //Verifica se o tempo é menor do que 3 h para fazer outra chamada ao API
+        this.props.fetchData(this.state.cityList[0].id);
+    }
   }
 
   transformDate(date) {
@@ -94,49 +100,52 @@ class WeatherForecast extends React.Component {
     };
   }
 
+  roundNumber = num => Math.round(num);
+
   render() {
-    let forecastHours = [
-      { hour: "Now", simbol: "02n.png", temp: 34 },
-      { hour: "15", simbol: "02n.png", temp: 36 },
-      { hour: "16", simbol: "03n.png", temp: 33 },
-      { hour: "17", simbol: "02n.png", temp: 34 },
-      { hour: "18", simbol: "02n.png", temp: 36 },
-      { hour: "19", simbol: "03n.png", temp: 33 },
-      { hour: "20", simbol: "02n.png", temp: 34 },
-      { hour: "21", simbol: "02n.png", temp: 36 },
-      { hour: "22", simbol: "03n.png", temp: 33 }
-    ];
+    let forecastDetails = [];
 
-    let forecastDays = [
-      { day: 0, simbol: "01n.png", max: 24, min: 19 },
-      { day: 1, simbol: "02d.png", max: 28, min: 19 },
-      { day: 2, simbol: "03d.png", max: 24, min: 17 },
-      { day: 3, simbol: "01d.png", max: 32, min: 21 },
-      { day: 4, simbol: "02n.png", max: 36, min: 24 },
-      { day: 5, simbol: "03d.png", max: 25, min: 19 },
-      { day: 6, simbol: "03d.png", max: 32, min: 21 },
-      { day: 0, simbol: "02n.png", max: 36, min: 24 },
-      { day: 1, simbol: "03d.png", max: 25, min: 19 },
-      { day: 2, simbol: "01n.png", max: 25, min: 19 }
-    ];
+    if (this.props.weather.dt) {
+      let sR = this.transformDate(this.props.weather.sys.sunrise);
+      let sS = this.transformDate(this.props.weather.sys.sunset);
 
-    let forecastDetails = [
-      [
-        { title: "SUN STARTS", text: "07:07" },
-        { title: "SUN ENDS", text: "18:18" }
-      ],
-      [
-        { title: "HUMIDITY", text: "10%" },
-        { title: "RAIN CHANCE", text: "40%" }
-      ],
-      [
-        { title: "VISIBILITY", text: "10,0 km" },
-        { title: "PRECIPITATION", text: "0 mm" }
-      ],
-      [{ title: "PRESSURE", text: "1011 hPa" }]
-    ];
-    //capitalizeFirstLetter(this.props.data.weather[0].description)
-    //this.props.data.main.temp.toString() + "º"
+      function lessThanTen(num) {
+        if (num < 10) return "0" + num.toString();
+        return num;
+      }
+
+      forecastDetails = [
+        [
+          {
+            title: "SUN STARTS",
+            text: `${lessThanTen(sR.getHours())}:${lessThanTen(
+              sR.getMinutes()
+            )}`
+          },
+          {
+            title: "SUN ENDS",
+            text: `${lessThanTen(sS.getHours())}:${lessThanTen(
+              sS.getMinutes()
+            )}`
+          }
+        ],
+        [
+          { title: "HUMIDITY", text: `${this.props.weather.main.humidity}%` },
+          {
+            title: "RAIN CHANCE",
+            text: `${100 - this.props.weather.clouds.all}%`
+          }
+        ],
+        [
+          {
+            title: "VISIBILITY",
+            text: `${this.props.weather.visibility / 1000} km`
+          },
+          { title: "PRECIPITATION", text: `${0} mm` }
+        ],
+        [{ title: "PRESSURE", text: `${this.props.weather.main.pressure}` }]
+      ];
+    }
 
     return (
       <View style={[{ flex: 1 }, this.state.cityList[this.state.page].bg]}>
@@ -150,6 +159,9 @@ class WeatherForecast extends React.Component {
               if (Math.round(x / screenWidth) === this.state.page) return;
               else {
                 this.setState({ page: Math.round(x / screenWidth) });
+                this.props.fetchData(
+                  this.state.cityList[Math.round(x / screenWidth)].id
+                );
               }
             }
           }}
@@ -166,14 +178,14 @@ class WeatherForecast extends React.Component {
               }}
               key={item.title + index.toString()}
             >
-              <Text style={[styles.text, { fontSize: 36 }]}>
-                {this.props.weather.name}
-              </Text>
+              <Text style={[styles.text, { fontSize: 36 }]}>{item.title}</Text>
               <Text style={[styles.text, { fontSize: 18 }]}>
-                {this.props.weather.weather.description}
+                {capitalizeFirstLetter(
+                  this.props.weather.weather[0].description
+                )}
               </Text>
               <Text style={styles.textBigTemp}>
-                {this.props.weather.main.temp}
+                {this.roundNumber(this.props.weather.main.temp)}
               </Text>
 
               <View style={[styles.lineSpaced, styles.container]}>
@@ -193,10 +205,10 @@ class WeatherForecast extends React.Component {
                 </View>
                 <View style={{ flexDirection: "row" }}>
                   <Text style={styles.textTempWhite}>
-                    {this.props.weather.main.temp_max}
+                    {this.roundNumber(this.props.weather.main.temp_max)}
                   </Text>
                   <Text style={styles.textTempGray}>
-                    {this.props.weather.main.temp_min}
+                    {this.roundNumber(this.props.weather.main.temp_min)}
                   </Text>
                 </View>
               </View>
@@ -205,30 +217,34 @@ class WeatherForecast extends React.Component {
                 style={[styles.topBottomWhiteBorder, styles.container]}
                 showsHorizontalScrollIndicator={false}
               >
-                {forecastHours.map((item2, index2) => {
-                  const iconURL = iconRequest + item2.simbol;
+                {this.props.weather.hourList.map((item2, index2) => {
+                  const iconURL = iconRequest + item2.weather[0].icon;
+                  const hourString =
+                    index2 === 0
+                      ? "Now"
+                      : this.transformDate(item2.dt).getHours();
+                  const tempString = this.roundNumber(item2.main.temp) + "º";
+
                   return (
                     <View
                       style={[styles.lineSpaced, { flexDirection: "column" }]}
                       key={item2.hour + index2.toString()}
                     >
-                      <Text style={styles.text}>{item2.hour}</Text>
+                      <Text style={styles.text}>{hourString}</Text>
                       <Image
                         style={{ height: 24, width: 24, marginVertical: 20 }}
                         source={{ uri: iconURL }}
                       />
-                      <Text style={styles.textBoldWhite}>
-                        {" "}
-                        {item2.temp + "º"}
-                      </Text>
+                      <Text style={styles.textBoldWhite}>{tempString}</Text>
                     </View>
                   );
                 })}
               </ScrollView>
               <View style={styles.container}>
-                {forecastDays.map((item3, index3) => {
-                  const iconURL = iconRequest + item3.simbol;
-                  const dayString = days[item3.day];
+                {this.props.weather.list.map((item3, index3) => {
+                  const iconURL = iconRequest + item3.weather[0].icon;
+                  const dayString = days[this.transformDate(item3.dt).getDay()];
+
                   return (
                     <View
                       style={[styles.lineSpaced, { paddingVertical: 5 }]}
@@ -254,8 +270,12 @@ class WeatherForecast extends React.Component {
                           flex: 1
                         }}
                       >
-                        <Text style={styles.textTempWhite}>{item3.max}</Text>
-                        <Text style={styles.textTempGray}>{item3.min}</Text>
+                        <Text style={styles.textTempWhite}>
+                          {this.roundNumber(item3.main.temp_max)}
+                        </Text>
+                        <Text style={styles.textTempGray}>
+                          {this.roundNumber(item3.main.temp_min)}
+                        </Text>
                       </View>
                     </View>
                   );
