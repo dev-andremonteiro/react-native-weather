@@ -9,10 +9,33 @@ import {
   Image
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { connect } from "react-redux";
+import { fetchWeatherData } from "../../actions";
 
 const OWMIcon = require("../../../assets/owm_icon.png");
+const iconRequest = "https://openweathermap.org/img/w/";
 
-export default class WeatherForecast extends React.Component {
+const screenWidth = Dimensions.get("window").width;
+
+const days = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday"
+];
+
+function capitalizeFirstLetter(string) {
+  let words = [];
+  string.split(" ").forEach(word => {
+    words.push(word[0].toUpperCase() + word.slice(1));
+  });
+  return words.join(" ");
+}
+
+class WeatherForecast extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,53 +43,39 @@ export default class WeatherForecast extends React.Component {
       cityList: [
         {
           title: "Cuiabá",
-          id:"3465038",
-          desc: "Nublado",
-          temp: "41",
-          max: "38",
-          min: "15",
+          id: "3465038",
           bg: null
         },
         {
           title: "Brasília",
-          id:"3469058",
-          desc: "Ensolarado",
-          temp: "23",
-          max: "38",
-          min: "12",
+          id: "3469058",
           bg: null
         },
         {
           title: "Castanhal",
-          id:"3402591",
-          desc: "Ensolarado",
-          temp: "23",
-          max: "38",
-          min: "12",
+          id: "3402591",
           bg: null
         },
         {
           title: "San Diego",
           id: "5391811",
-          desc: "Ensolarado",
-          temp: "23",
-          max: "38",
-          min: "12",
           bg: null
         }
       ]
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     let cityList = this.state.cityList.map(item => {
-      item.bg = this.back();
+      item.bg = this.generateBackgroundColor();
       return item;
     });
     this.setState({ cityList });
+
+    //FETCHING PAGE 0 DATA
+    this.props.fetchData(this.state.cityList[0].id.toString());
   }
 
-  //Sol Nasce, Sol se Põe (Unix,UTC), Humidade(%), Chance de Chuva(%), Visibilidade(Km), Precipitação(mm), Pressão (hPa)
   transformDate(date) {
     var aestTime = new Date(date * 1000).toLocaleString("en-US", {
       timeZone: "America/Cuiaba"
@@ -75,7 +84,7 @@ export default class WeatherForecast extends React.Component {
     return aestTime;
   }
 
-  back() {
+  generateBackgroundColor() {
     function s(s) {
       return Math.floor(Math.random() * s).toString();
     }
@@ -86,31 +95,29 @@ export default class WeatherForecast extends React.Component {
   }
 
   render() {
-    let screenWidth = Dimensions.get("window").width;
-
     let forecastHours = [
-      { hour: "Now", simbol: "12", temp: "34" },
-      { hour: "15", simbol: "12", temp: "36" },
-      { hour: "16", simbol: "225", temp: "33" },
-      { hour: "17", simbol: "12", temp: "34" },
-      { hour: "18", simbol: "12", temp: "36" },
-      { hour: "19", simbol: "225", temp: "33" },
-      { hour: "20", simbol: "12", temp: "34" },
-      { hour: "21", simbol: "12", temp: "36" },
-      { hour: "22", simbol: "225", temp: "33" }
+      { hour: "Now", simbol: "02n.png", temp: 34 },
+      { hour: "15", simbol: "02n.png", temp: 36 },
+      { hour: "16", simbol: "03n.png", temp: 33 },
+      { hour: "17", simbol: "02n.png", temp: 34 },
+      { hour: "18", simbol: "02n.png", temp: 36 },
+      { hour: "19", simbol: "03n.png", temp: 33 },
+      { hour: "20", simbol: "02n.png", temp: 34 },
+      { hour: "21", simbol: "02n.png", temp: 36 },
+      { hour: "22", simbol: "03n.png", temp: 33 }
     ];
 
     let forecastDays = [
-      { day: "Sexta-Feira", simbol: "659", max: "28", min: "19" },
-      { day: "Sexta-Feira", simbol: "659", max: "24", min: "19" },
-      { day: "Sexta-Feira", simbol: "659", max: "24", min: "17" },
-      { day: "Sexta-Feira", simbol: "659", max: "32", min: "21" },
-      { day: "Sexta-Feira", simbol: "659", max: "36", min: "24" },
-      { day: "Sexta-Feira", simbol: "659", max: "25", min: "19" },
-      { day: "Sexta-Feira", simbol: "659", max: "32", min: "21" },
-      { day: "Sexta-Feira", simbol: "659", max: "36", min: "24" },
-      { day: "Sexta-Feira", simbol: "659", max: "25", min: "19" },
-      { day: "Sexta-Feira", simbol: "659", max: "25", min: "19" }
+      { day: 0, simbol: "01n.png", max: 24, min: 19 },
+      { day: 1, simbol: "02d.png", max: 28, min: 19 },
+      { day: 2, simbol: "03d.png", max: 24, min: 17 },
+      { day: 3, simbol: "01d.png", max: 32, min: 21 },
+      { day: 4, simbol: "02n.png", max: 36, min: 24 },
+      { day: 5, simbol: "03d.png", max: 25, min: 19 },
+      { day: 6, simbol: "03d.png", max: 32, min: 21 },
+      { day: 0, simbol: "02n.png", max: 36, min: 24 },
+      { day: 1, simbol: "03d.png", max: 25, min: 19 },
+      { day: 2, simbol: "01n.png", max: 25, min: 19 }
     ];
 
     let forecastDetails = [
@@ -128,6 +135,8 @@ export default class WeatherForecast extends React.Component {
       ],
       [{ title: "PRESSURE", text: "1011 hPa" }]
     ];
+    //capitalizeFirstLetter(this.props.data.weather[0].description)
+    //this.props.data.main.temp.toString() + "º"
 
     return (
       <View style={[{ flex: 1 }, this.state.cityList[this.state.page].bg]}>
@@ -139,7 +148,9 @@ export default class WeatherForecast extends React.Component {
             let x = event.nativeEvent.contentOffset.x;
             if (x > 0) {
               if (Math.round(x / screenWidth) === this.state.page) return;
-              else this.setState({ page: Math.round(x / screenWidth) });
+              else {
+                this.setState({ page: Math.round(x / screenWidth) });
+              }
             }
           }}
           scrollEventThrottle={16}
@@ -147,10 +158,7 @@ export default class WeatherForecast extends React.Component {
           <StatusBar barStyle={"light-content"} />
           {this.state.cityList.map((item, index) => (
             <ScrollView
-              style={{
-                flex: 1,
-                width: screenWidth
-              }}
+              style={styles.container}
               contentContainerStyle={{
                 paddingTop: 50,
                 justifyContent: "center",
@@ -158,230 +166,132 @@ export default class WeatherForecast extends React.Component {
               }}
               key={item.title + index.toString()}
             >
-              <View
-                style={{
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: screenWidth
-                }}
-              >
-                <Text
-                  style={{
-                    color: "#fff",
-                    fontSize: 36
-                  }}
-                >
-                  {item.title}
-                </Text>
-                <Text
-                  style={{
-                    color: "#fff",
-                    fontSize: 18
-                  }}
-                >
-                  {item.desc}
-                </Text>
-                <Text
-                  style={{
-                    color: "#fff",
-                    fontSize: 72,
-                    fontWeight: "200"
-                  }}
-                >
-                  {item.temp + "º"}
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  width: screenWidth,
-                  paddingVertical: 10,
-                  paddingHorizontal: 15
-                }}
-              >
+              <Text style={[styles.text, { fontSize: 36 }]}>
+                {this.props.weather.name}
+              </Text>
+              <Text style={[styles.text, { fontSize: 18 }]}>
+                {this.props.weather.weather.description}
+              </Text>
+              <Text style={styles.textBigTemp}>
+                {this.props.weather.main.temp}
+              </Text>
+
+              <View style={[styles.lineSpaced, styles.container]}>
                 <View
                   style={{
                     flexDirection: "row",
                     alignItems: "flex-end"
                   }}
                 >
-                  <Text
-                    style={{
-                      fontSize: 22,
-                      fontWeight: "300",
-                      color: "#fff"
-                    }}
-                  >
-                    {"Sexta-Feira"}
+                  <Text style={[styles.textDay, { fontWeight: "300" }]}>
+                    {this.props.weather.dt &&
+                      days[this.transformDate(this.props.weather.dt).getDay()]}
                   </Text>
-                  <Text
-                    style={{
-                      paddingLeft: 10,
-                      color: "#fff",
-                      fontWeight: "600"
-                    }}
-                  >
-                    {"HOJE"}
+                  <Text style={[styles.textBoldWhite, { paddingLeft: 10 }]}>
+                    {"TODAY"}
                   </Text>
                 </View>
                 <View style={{ flexDirection: "row" }}>
-                  <Text
-                    style={{
-                      paddingHorizontal: 15,
-                      fontSize: 20,
-                      fontWeight: "300",
-                      color: "#fff"
-                    }}
-                  >
-                    {item.max}
+                  <Text style={styles.textTempWhite}>
+                    {this.props.weather.main.temp_max}
                   </Text>
-                  <Text
-                    style={{ fontSize: 20, fontWeight: "200", color: "#aaa" }}
-                  >
-                    {item.min}
+                  <Text style={styles.textTempGray}>
+                    {this.props.weather.main.temp_min}
                   </Text>
                 </View>
               </View>
               <ScrollView
                 horizontal={true}
-                style={{
-                  width: screenWidth,
-                  borderBottomColor: "#fff",
-                  borderTopColor: "#fff",
-                  borderTopWidth: StyleSheet.hairlineWidth,
-                  borderBottomWidth: StyleSheet.hairlineWidth
-                }}
+                style={[styles.topBottomWhiteBorder, styles.container]}
                 showsHorizontalScrollIndicator={false}
               >
-                {forecastHours.map((item2, index2) => (
-                  <View
-                    style={{
-                      alignItems: "center",
-                      justifyContent: "space-between"
-                    }}
-                    key={item2.hour + index2.toString()}
-                  >
-                    <Text style={{ paddingHorizontal: 15, paddingVertical: 10, color: "#fff" }}>
-                      {item2.hour}
-                    </Text>
-                    <Text style={{ paddingHorizontal: 15, paddingVertical: 10,color: "#fff" }}>
-                      {item2.simbol}
-                    </Text>
-                    <Text
-                      style={{ paddingHorizontal: 15, paddingVertical: 10,fontWeight: "600", color: "#fff" }}
+                {forecastHours.map((item2, index2) => {
+                  const iconURL = iconRequest + item2.simbol;
+                  return (
+                    <View
+                      style={[styles.lineSpaced, { flexDirection: "column" }]}
+                      key={item2.hour + index2.toString()}
                     >
-                      {item2.temp + "º"}
-                    </Text>
-                  </View>
-                ))}
-              </ScrollView>
-              <View style={{ width: screenWidth }}>
-                {forecastDays.map((item3, index3) => (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      paddingHorizontal: 15,
-                      paddingVertical: 5
-                    }}
-                    key={item3.day + index3.toString()}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 20,
-                        fontWeight: "200",
-                        color: "#fff"
-                      }}
-                    >
-                      {item3.day}
-                    </Text>
-                    <Text style={{ color: "#fff" }}>{item3.simbol}</Text>
-                    <View style={{ flexDirection: "row" }}>
-                      <Text
-                        style={{
-                          paddingHorizontal: 15,
-                          fontSize: 20,
-                          fontWeight: "300",
-                          color: "#fff"
-                        }}
-                      >
-                        {item3.max}
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: 20,
-                          fontWeight: "200",
-                          color: "#aaa"
-                        }}
-                      >
-                        {item3.min}
+                      <Text style={styles.text}>{item2.hour}</Text>
+                      <Image
+                        style={{ height: 24, width: 24, marginVertical: 20 }}
+                        source={{ uri: iconURL }}
+                      />
+                      <Text style={styles.textBoldWhite}>
+                        {" "}
+                        {item2.temp + "º"}
                       </Text>
                     </View>
-                  </View>
-                ))}
+                  );
+                })}
+              </ScrollView>
+              <View style={styles.container}>
+                {forecastDays.map((item3, index3) => {
+                  const iconURL = iconRequest + item3.simbol;
+                  const dayString = days[item3.day];
+                  return (
+                    <View
+                      style={[styles.lineSpaced, { paddingVertical: 5 }]}
+                      key={item3.day + index3.toString()}
+                    >
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          flex: 1.4
+                        }}
+                      >
+                        <Text style={styles.textDay}>{dayString}</Text>
+                        <Image
+                          style={{ height: 24, width: 24 }}
+                          source={{ uri: iconURL }}
+                        />
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "flex-end",
+                          flex: 1
+                        }}
+                      >
+                        <Text style={styles.textTempWhite}>{item3.max}</Text>
+                        <Text style={styles.textTempGray}>{item3.min}</Text>
+                      </View>
+                    </View>
+                  );
+                })}
               </View>
               <View
-                style={{
-                  width: screenWidth,
-                  borderBottomColor: "#fff",
-                  borderTopColor: "#fff",
-                  borderTopWidth: StyleSheet.hairlineWidth,
-                  borderBottomWidth: StyleSheet.hairlineWidth,
-                  padding: 15,
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
+                style={[
+                  styles.container,
+                  styles.topBottomWhiteBorder,
+                  styles.report
+                ]}
               >
-                <Text
-                  style={{
-                    color: "#fff",
-                    fontSize: 16,
-                    fontWeight: "200",
-                    lineHeight: 20
-                  }}
-                >
+                <Text style={styles.textReport}>
                   {
                     "Hoje: Temporais isolados no momento. A temperatura é de 21º; a máxima hoje foi prevista como 28º."
                   }
                 </Text>
               </View>
-              <View
-                style={{
-                  flex: 1,
-                  width: screenWidth
-                }}
-              >
+              <View style={styles.container}>
                 {forecastDetails.map((item4, index4) => (
                   <View
                     style={[
-                      {
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        marginHorizontal: 15,
-                        borderBottomColor: "#fff",
-                        borderBottomWidth: StyleSheet.hairlineWidth
-                      },
+                      styles.details,
                       index4 === 3 ? { borderBottomWidth: 0 } : null
                     ]}
                     key={"subarray" + index4.toString()}
                   >
                     {item4.map(i => (
                       <View style={{ flex: 1, padding: 10 }} key={i.title}>
-                        <Text
-                          style={{
-                            fontSize: 12,
-                            fontWeight: "300",
-                            color: "#aaa"
-                          }}
-                        >
-                          {i.title}
+                        <Text style={[styles.textTempGray, { fontSize: 12 }]}>
+                          {" "}
+                          {i.title}{" "}
                         </Text>
-                        <Text style={{ fontSize: 28, color: "#fff" }}>
-                          {i.text}
+                        <Text style={[styles.text, { fontSize: 28 }]}>
+                          {" "}
+                          {i.text}{" "}
                         </Text>
                       </View>
                     ))}
@@ -391,34 +301,26 @@ export default class WeatherForecast extends React.Component {
             </ScrollView>
           ))}
         </ScrollView>
-        <View
-          style={{
-            borderTopColor: "#fff",
-            borderTopWidth: StyleSheet.hairlineWidth,
-            width: screenWidth,
-            height: 40,
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexDirection: "row",
-            paddingHorizontal: 15
-          }}
-        >
+
+        <View style={styles.footer}>
           <Image
             source={OWMIcon}
             resizeMode={"contain"}
             style={{ height: 20, width: 20 }}
           />
-          <View style={{ flexDirection: "row",aligItems: "center", justifyContent: "center" }}>
+          <View style={styles.ballWraper}>
             {this.state.cityList.map((item5, index5) => (
-              <View 
-              style={{
-                backgroundColor: `rgba(255,255,255,${(index5===this.state.page)?"0.5":"0.2"})`,
-                width: 6,
-                height: 6,
-                borderRadius: 3,
-                margin: 3}}
-              key={"bolinha"+index5.toString()}
-                />
+              <View
+                style={[
+                  styles.ball,
+                  {
+                    backgroundColor: `rgba(255,255,255,${
+                      index5 === this.state.page ? "0.5" : "0.2"
+                    })`
+                  }
+                ]}
+                key={"ball" + index5.toString()}
+              />
             ))}
           </View>
           <Ionicons name="ios-list" size={20} color="#fff" />
@@ -427,3 +329,106 @@ export default class WeatherForecast extends React.Component {
     );
   }
 }
+
+const mapStateToProps = state => state;
+
+const mapDispatchToProps = dispatch => {
+  return {
+    fetchData: id => dispatch(fetchWeatherData(id))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(WeatherForecast);
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: screenWidth
+  },
+  topBottomWhiteBorder: {
+    borderBottomColor: "#fff",
+    borderTopColor: "#fff",
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth
+  },
+  lineSpaced: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 10,
+    paddingHorizontal: 15
+  },
+  //
+  //
+  textReport: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "200",
+    lineHeight: 20
+  },
+  textBoldWhite: {
+    color: "#fff",
+    fontWeight: "600"
+  },
+  textDay: {
+    fontSize: 20,
+    fontWeight: "200",
+    color: "#fff"
+  },
+  textBigTemp: {
+    color: "#fff",
+    fontSize: 72,
+    fontWeight: "200"
+  },
+  textTempGray: { fontSize: 20, fontWeight: "200", color: "#aaa" },
+  textTempWhite: {
+    paddingHorizontal: 15,
+    fontSize: 20,
+    fontWeight: "300",
+    color: "#fff"
+  },
+  text: {
+    color: "#fff"
+  },
+  //
+  //
+  report: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 15
+  },
+  //
+  details: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 15,
+    borderBottomColor: "#fff",
+    borderBottomWidth: StyleSheet.hairlineWidth
+  },
+  //
+  footer: {
+    width: screenWidth,
+    height: 40,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 15,
+    borderTopColor: "#fff",
+    borderTopWidth: StyleSheet.hairlineWidth
+  },
+  ballWraper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  ball: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    margin: 3
+  }
+});

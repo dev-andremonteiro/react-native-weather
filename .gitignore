@@ -62,3 +62,6 @@ typings/
 
 #expo folder
 .expo/
+
+#secrets folder
+secrets/

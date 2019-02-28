@@ -1,5 +1,4 @@
 {
-  "_comment": "http://api.openweathermap.org/data/2.5/weather?id=3465038&lang=en&units=metric&APPID=f39c4f7ecf7a43c31592fbde72cf4b7f",
   "coord": {
     "lon": -56.1,
     "lat": -15.6
@@ -10,7 +9,7 @@
       "main": "Clouds",
       "description": "scattered clouds",
       "icon": "03n",
-      "_howto": "http://openweathermap.org/img/w/03n.png"
+      "_howto": "https://openweathermap.org/img/w/02n.png"
     }
   ],
   "base": "stations",

@@ -10,12 +10,9 @@ import Thunk from "redux-thunk";
 
 import Reducers from "./Reducers";
 import Router from "./Router";
+import { fetchWeatherData } from "./actions";
 
-const Logger = createLogger({
-  predicate: (getState, action) => __DEV__,
-  collapsed: true,
-  duration: true
-});
+const Logger = createLogger();
 
 const persistConfig = {
   key: "root",
@@ -25,17 +22,15 @@ const persistedReducer = persistReducer(persistConfig, Reducers);
 
 const initialState = {};
 
-const store = createStore(
-  persistedReducer,
-  initialState,
-  applyMiddleware(Thunk, Logger)
-);
+const store = createStore(Reducers, applyMiddleware(Thunk, Logger));
+
+store.dispatch(fetchWeatherData("3465038"));
 
 export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: true
+      isLoading: false
     };
   }
 
@@ -48,10 +43,8 @@ export default class App extends React.Component {
   render() {
     if (this.state.isLoading) return null;
     return (
-      <Provider store={this.state.store}>
-        <PersistGate persistor={this.state.persistor}>
-          <Router />
-        </PersistGate>
+      <Provider store={store}>
+        <Router />
       </Provider>
     );
   }
