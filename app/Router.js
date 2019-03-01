@@ -8,6 +8,7 @@ import {
 import Loading from "./screens/Loading";
 import StopWatch from "./screens/StopWatch";
 import WeatherForecast from "./screens/WeatherForecast";
+import TwitterClone from "./screens/TwitterClone";
 
 export default createAppContainer(
   createStackNavigator(
@@ -24,10 +25,16 @@ export default createAppContainer(
         navigationOptions: {
           header: null
         }
+      },
+      TwitterClone: {
+        screen: TwitterClone,
+        navigationOptions: {
+          header: null
+        }
       }
     },
     {
-      initialRouteName: "WeatherForecast"
+      initialRouteName: "TwitterClone"
     }
   )
 );

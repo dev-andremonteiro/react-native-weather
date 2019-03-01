@@ -5,21 +5,20 @@ import { AsyncStorage } from "react-native";
 
 import Thunk from "redux-thunk";
 
-import Reducers from "./Reducers";
+import Reducers from "./reducers";
 
 const Logger = createLogger({
   predicate: (getState, action) => __DEV__,
   collapsed: true,
   duration: true
 });
-/*
+
 export const store = createStore(
   Reducers,
   undefined,
   applyMiddleware(Thunk, Logger)
 );
-*/
-
+/*
 const persistConfig = {
   key: "root2",
   storage: AsyncStorage
@@ -34,3 +33,4 @@ export const store = createStore(
 );
 
 export const persistor = persistStore(store);
+*/

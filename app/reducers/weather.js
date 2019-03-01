@@ -1,7 +1,5 @@
-import { WEATHER_SUCCESS, WEATHER_FETCH, WEATHER_ERROR } from "./actions";
-import { ADD_CITY, DELETE_CITY, CHANGE_PAGE } from "./actions";
-
-import { combineReducers } from "redux";
+import { WEATHER_SUCCESS, WEATHER_FETCH, WEATHER_ERROR } from "../actions";
+import { ADD_CITY, DELETE_CITY, CHANGE_PAGE } from "../actions";
 
 function weather(state = weatherData, action) {
   switch (action.type) {
@@ -183,7 +181,7 @@ citiesData = {
   }
 };
 
-function cities(state = citiesData, action) {
+const cities = (state = citiesData, action) => {
   let newState = { ...state };
   switch (action.type) {
     case ADD_CITY:
@@ -217,10 +215,6 @@ function cities(state = citiesData, action) {
     default:
       return state;
   }
-}
+};
 
-const reducers = combineReducers({
-  cities
-});
-
-export default reducers;
+export default cities;

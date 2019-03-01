@@ -5,7 +5,7 @@ import { Provider } from "react-redux";
 import { store, persistor } from "./configureStore";
 
 import Router from "./Router";
-/*
+
 const App = () => {
   return (
     <Provider store={store}>
@@ -13,9 +13,8 @@ const App = () => {
     </Provider>
   );
 };
-Testing to see if graph is working
-*/
 
+/*
 const App = () => {
   return (
     <Provider store={store}>
@@ -24,6 +23,5 @@ const App = () => {
       </PersistGate>
     </Provider>
   );
-};
-
+};*/
 export default App;
