@@ -1,32 +1,7 @@
 import { WEATHER_SUCCESS, WEATHER_FETCH, WEATHER_ERROR } from "./actions";
-import { combineReducers } from "redux";
+import { ADD_CITY, DELETE_CITY, CHANGE_PAGE } from "./actions";
 
-const weatherData = {
-  isFetching: false,
-  name: "",
-  weather: [
-    {
-      description: ""
-    }
-  ],
-  main: {
-    temp: null,
-    presure: null,
-    humidity: null,
-    temp_min: null,
-    temp_max: null
-  },
-  sys: {
-    sunrise: null,
-    sunset: null
-  },
-  visibility: null,
-  dt: null,
-  wind: null,
-  clouds: { all: null },
-  list: [],
-  hourList: []
-};
+import { combineReducers } from "redux";
 
 function weather(state = weatherData, action) {
   switch (action.type) {
@@ -56,8 +31,196 @@ function weather(state = weatherData, action) {
   }
 }
 
+citiesData = {
+  page: 0,
+  list: [
+    {
+      title: "Cuiabá",
+      id: "3465038",
+      data: {
+        isFetching: false,
+        name: "",
+        weather: [
+          {
+            description: ""
+          }
+        ],
+        main: {
+          temp: null,
+          presure: null,
+          humidity: null,
+          temp_min: null,
+          temp_max: null
+        },
+        sys: {
+          sunrise: null,
+          sunset: null
+        },
+        visibility: null,
+        dt: null,
+        wind: null,
+        clouds: { all: null },
+        list: [],
+        hourList: []
+      }
+    },
+    {
+      title: "Brasília",
+      id: "3469058",
+      data: {
+        isFetching: false,
+        name: "",
+        weather: [
+          {
+            description: ""
+          }
+        ],
+        main: {
+          temp: null,
+          presure: null,
+          humidity: null,
+          temp_min: null,
+          temp_max: null
+        },
+        sys: {
+          sunrise: null,
+          sunset: null
+        },
+        visibility: null,
+        dt: null,
+        wind: null,
+        clouds: { all: null },
+        list: [],
+        hourList: []
+      }
+    },
+    {
+      title: "Castanhal",
+      id: "3402591",
+      data: {
+        isFetching: false,
+        name: "",
+        weather: [
+          {
+            description: ""
+          }
+        ],
+        main: {
+          temp: null,
+          presure: null,
+          humidity: null,
+          temp_min: null,
+          temp_max: null
+        },
+        sys: {
+          sunrise: null,
+          sunset: null
+        },
+        visibility: null,
+        dt: null,
+        wind: null,
+        clouds: { all: null },
+        list: [],
+        hourList: []
+      }
+    },
+    {
+      title: "San Diego",
+      id: "5391811",
+      data: {
+        isFetching: false,
+        name: "",
+        weather: [
+          {
+            description: ""
+          }
+        ],
+        main: {
+          temp: null,
+          presure: null,
+          humidity: null,
+          temp_min: null,
+          temp_max: null
+        },
+        sys: {
+          sunrise: null,
+          sunset: null
+        },
+        visibility: null,
+        dt: null,
+        wind: null,
+        clouds: { all: null },
+        list: [],
+        hourList: []
+      }
+    }
+  ],
+  currentWeather: {
+    isFetching: false,
+    name: "",
+    weather: [
+      {
+        description: ""
+      }
+    ],
+    main: {
+      temp: null,
+      presure: null,
+      humidity: null,
+      temp_min: null,
+      temp_max: null
+    },
+    sys: {
+      sunrise: null,
+      sunset: null
+    },
+    visibility: null,
+    dt: null,
+    wind: null,
+    clouds: { all: null },
+    list: [],
+    hourList: []
+  }
+};
+
+function cities(state = citiesData, action) {
+  let newState = { ...state };
+  switch (action.type) {
+    case ADD_CITY:
+      // PAYLOAD: OBJECT
+      newState.list.push(action.payload);
+      return newState;
+
+    case DELETE_CITY:
+      //PAYLOD: INDEX
+      newState.list = [
+        ...newState.slice(0, action.payload),
+        ...newState.slice(action.payload + 1)
+      ];
+      return newState;
+    case CHANGE_PAGE:
+      //PAYLOAD: PAGE INDEX
+      return {
+        ...state,
+        page: action.payload,
+        currentWeather: state.list[action.payload].data
+      };
+    case WEATHER_FETCH:
+    case WEATHER_ERROR:
+    case WEATHER_SUCCESS:
+      newState.list[newState.page].data = weather(
+        newState.list[newState.page].data,
+        action
+      );
+      newState.currentWeather = newState.list[newState.page].data;
+      return newState;
+    default:
+      return state;
+  }
+}
+
 const reducers = combineReducers({
-  weather
+  cities
 });
 
 export default reducers;

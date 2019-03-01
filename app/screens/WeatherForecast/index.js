@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { connect } from "react-redux";
-import { fetchWeatherData } from "../../actions";
+import { fetchWeatherData, pageChange } from "../../actions";
 
 const OWMIcon = require("../../../assets/owm_icon.png");
 const iconRequest = "https://openweathermap.org/img/w/";
@@ -41,45 +41,18 @@ class WeatherForecast extends React.Component {
     super(props);
     this.state = {
       page: 0,
-      cityList: [
-        {
-          title: "Cuiabá",
-          id: "3465038",
-          bg: null
-        },
-        {
-          title: "Brasília",
-          id: "3469058",
-          bg: null
-        },
-        {
-          title: "Castanhal",
-          id: "3402591",
-          bg: null
-        },
-        {
-          title: "San Diego",
-          id: "5391811",
-          bg: null
-        }
-      ]
+      bgs: []
     };
   }
 
   componentDidMount() {
-    let cityList = this.state.cityList.map(item => {
-      item.bg = this.generateBackgroundColor();
-      return item;
-    });
-    this.setState({ cityList });
-
-    //FETCHING PAGE 0 DATA
-    if (!this.props.weather.dt) {
-      let x = this.transformDate(this.props.weather.dt);
-      if ((x - new Date()) / 1000 / 60 / 60 / 24 < -0.125)
-        //Verifica se o tempo é menor do que 3 h para fazer outra chamada ao API
-        this.props.fetchData(this.state.cityList[0].id);
+    let bgs = [];
+    for (let i = 0; i < this.props.cities.list.length; i++) {
+      bgs.push(this.generateBackgroundColor());
     }
+    this.setState({ bgs });
+
+    this.props.fetchData(this.props.cities.list[0].id);
   }
 
   transformDate(date) {
@@ -100,14 +73,14 @@ class WeatherForecast extends React.Component {
     };
   }
 
-  roundNumber = num => Math.round(num);
+  roundNumber = num => (num ? Math.round(num) : "0");
 
   render() {
     let forecastDetails = [];
 
-    if (this.props.weather.dt) {
-      let sR = this.transformDate(this.props.weather.sys.sunrise);
-      let sS = this.transformDate(this.props.weather.sys.sunset);
+    if (this.props.cities.currentWeather.dt) {
+      let sR = this.transformDate(this.props.cities.currentWeather.sys.sunrise);
+      let sS = this.transformDate(this.props.cities.currentWeather.sys.sunset);
 
       function lessThanTen(num) {
         if (num < 10) return "0" + num.toString();
@@ -130,25 +103,33 @@ class WeatherForecast extends React.Component {
           }
         ],
         [
-          { title: "HUMIDITY", text: `${this.props.weather.main.humidity}%` },
+          {
+            title: "HUMIDITY",
+            text: `${this.props.cities.currentWeather.main.humidity}%`
+          },
           {
             title: "RAIN CHANCE",
-            text: `${100 - this.props.weather.clouds.all}%`
+            text: `${100 - this.props.cities.currentWeather.clouds.all}%`
           }
         ],
         [
           {
             title: "VISIBILITY",
-            text: `${this.props.weather.visibility / 1000} km`
+            text: `${this.props.cities.currentWeather.visibility / 1000} km`
           },
           { title: "PRECIPITATION", text: `${0} mm` }
         ],
-        [{ title: "PRESSURE", text: `${this.props.weather.main.pressure}` }]
+        [
+          {
+            title: "PRESSURE",
+            text: `${this.props.cities.currentWeather.main.pressure}`
+          }
+        ]
       ];
     }
 
     return (
-      <View style={[{ flex: 1 }, this.state.cityList[this.state.page].bg]}>
+      <View style={[{ flex: 1 }, this.state.bgs[this.props.cities.page]]}>
         <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator={false}
@@ -156,19 +137,17 @@ class WeatherForecast extends React.Component {
           onScroll={event => {
             let x = event.nativeEvent.contentOffset.x;
             if (x > 0) {
-              if (Math.round(x / screenWidth) === this.state.page) return;
+              if (Math.round(x / screenWidth) === this.props.cities.page)
+                return;
               else {
-                this.setState({ page: Math.round(x / screenWidth) });
-                this.props.fetchData(
-                  this.state.cityList[Math.round(x / screenWidth)].id
-                );
+                this.props.changePage(Math.round(x / screenWidth));
               }
             }
           }}
           scrollEventThrottle={16}
         >
           <StatusBar barStyle={"light-content"} />
-          {this.state.cityList.map((item, index) => (
+          {this.props.cities.list.map((item, index) => (
             <ScrollView
               style={styles.container}
               contentContainerStyle={{
@@ -181,11 +160,11 @@ class WeatherForecast extends React.Component {
               <Text style={[styles.text, { fontSize: 36 }]}>{item.title}</Text>
               <Text style={[styles.text, { fontSize: 18 }]}>
                 {capitalizeFirstLetter(
-                  this.props.weather.weather[0].description
+                  this.props.cities.currentWeather.weather[0].description
                 )}
               </Text>
               <Text style={styles.textBigTemp}>
-                {this.roundNumber(this.props.weather.main.temp)}
+                {this.roundNumber(this.props.cities.currentWeather.main.temp)}
               </Text>
 
               <View style={[styles.lineSpaced, styles.container]}>
@@ -196,8 +175,12 @@ class WeatherForecast extends React.Component {
                   }}
                 >
                   <Text style={[styles.textDay, { fontWeight: "300" }]}>
-                    {this.props.weather.dt &&
-                      days[this.transformDate(this.props.weather.dt).getDay()]}
+                    {this.props.cities.currentWeather.dt &&
+                      days[
+                        this.transformDate(
+                          this.props.cities.currentWeather.dt
+                        ).getDay()
+                      ]}
                   </Text>
                   <Text style={[styles.textBoldWhite, { paddingLeft: 10 }]}>
                     {"TODAY"}
@@ -205,10 +188,14 @@ class WeatherForecast extends React.Component {
                 </View>
                 <View style={{ flexDirection: "row" }}>
                   <Text style={styles.textTempWhite}>
-                    {this.roundNumber(this.props.weather.main.temp_max)}
+                    {this.roundNumber(
+                      this.props.cities.currentWeather.main.temp_max
+                    )}
                   </Text>
                   <Text style={styles.textTempGray}>
-                    {this.roundNumber(this.props.weather.main.temp_min)}
+                    {this.roundNumber(
+                      this.props.cities.currentWeather.main.temp_min
+                    )}
                   </Text>
                 </View>
               </View>
@@ -217,31 +204,33 @@ class WeatherForecast extends React.Component {
                 style={[styles.topBottomWhiteBorder, styles.container]}
                 showsHorizontalScrollIndicator={false}
               >
-                {this.props.weather.hourList.map((item2, index2) => {
-                  const iconURL = iconRequest + item2.weather[0].icon;
-                  const hourString =
-                    index2 === 0
-                      ? "Now"
-                      : this.transformDate(item2.dt).getHours();
-                  const tempString = this.roundNumber(item2.main.temp) + "º";
+                {this.props.cities.currentWeather.hourList.map(
+                  (item2, index2) => {
+                    const iconURL = iconRequest + item2.weather[0].icon;
+                    const hourString =
+                      index2 === 0
+                        ? "Now"
+                        : this.transformDate(item2.dt).getHours();
+                    const tempString = this.roundNumber(item2.main.temp) + "º";
 
-                  return (
-                    <View
-                      style={[styles.lineSpaced, { flexDirection: "column" }]}
-                      key={item2.hour + index2.toString()}
-                    >
-                      <Text style={styles.text}>{hourString}</Text>
-                      <Image
-                        style={{ height: 24, width: 24, marginVertical: 20 }}
-                        source={{ uri: iconURL }}
-                      />
-                      <Text style={styles.textBoldWhite}>{tempString}</Text>
-                    </View>
-                  );
-                })}
+                    return (
+                      <View
+                        style={[styles.lineSpaced, { flexDirection: "column" }]}
+                        key={item2.hour + index2.toString()}
+                      >
+                        <Text style={styles.text}>{hourString}</Text>
+                        <Image
+                          style={{ height: 24, width: 24, marginVertical: 20 }}
+                          source={{ uri: iconURL }}
+                        />
+                        <Text style={styles.textBoldWhite}>{tempString}</Text>
+                      </View>
+                    );
+                  }
+                )}
               </ScrollView>
               <View style={styles.container}>
-                {this.props.weather.list.map((item3, index3) => {
+                {this.props.cities.currentWeather.list.map((item3, index3) => {
                   const iconURL = iconRequest + item3.weather[0].icon;
                   const dayString = days[this.transformDate(item3.dt).getDay()];
 
@@ -329,13 +318,13 @@ class WeatherForecast extends React.Component {
             style={{ height: 20, width: 20 }}
           />
           <View style={styles.ballWraper}>
-            {this.state.cityList.map((item5, index5) => (
+            {this.props.cities.list.map((item5, index5) => (
               <View
                 style={[
                   styles.ball,
                   {
                     backgroundColor: `rgba(255,255,255,${
-                      index5 === this.state.page ? "0.5" : "0.2"
+                      index5 === this.props.cities.page ? "0.5" : "0.2"
                     })`
                   }
                 ]}
@@ -354,7 +343,8 @@ const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => {
   return {
-    fetchData: id => dispatch(fetchWeatherData(id))
+    fetchData: id => dispatch(fetchWeatherData(id)),
+    changePage: n => dispatch(pageChange(n))
   };
 };
 

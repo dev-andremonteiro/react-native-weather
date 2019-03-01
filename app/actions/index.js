@@ -22,8 +22,22 @@ export function weatherError(payload) {
   };
 }
 
+function transformDate(date) {
+  if (!date) return null;
+  var aestTime = new Date(date * 1000).toLocaleString("en-US", {
+    timeZone: "America/Cuiaba"
+  });
+  aestTime = new Date(aestTime);
+  return aestTime;
+}
+
 export function fetchWeatherData(id) {
-  return dispatch => {
+  return (dispatch, getState) => {
+    let d = transformDate(getState().cities.currentWeather.dt);
+    if (d) {
+      if ((d - new Date()) / 1000 / 60 / 60 / 24 >= -0.125) return; //Verifica se o tempo é menor do que 3 h para fazer outra chamada a API
+    }
+
     dispatch(weatherFetch());
 
     return fetch(
@@ -49,3 +63,38 @@ export function fetchWeatherData(id) {
   };
 }
 //-------------------------------------------------------------
+
+export const ADD_CITY = "ADD_CITY";
+export const DELETE_CITY = "DELETE_CITY";
+export const CHANGE_PAGE = "CHANGE_PAGE";
+
+export function addCity(payload) {
+  return {
+    type: ADD_CITY,
+    payload
+  };
+}
+
+export function deleteCity(payload) {
+  return {
+    type: DELETE_CITY,
+    payload
+  };
+}
+
+export function pageChange(payload) {
+  return (dispatch, getState) => {
+    dispatch({
+      type: CHANGE_PAGE,
+      payload
+    });
+
+    if (!getState().cities.currentWeather.isFetching) {
+      let currentList = getState().cities.list;
+      let currentPage = getState().cities.page;
+      dispatch(fetchWeatherData(currentList[currentPage].id));
+    }
+
+    return;
+  };
+}
