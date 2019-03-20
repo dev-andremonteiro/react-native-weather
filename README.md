@@ -11,7 +11,7 @@
  <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=expo.io/@menorme/weather-app">
   </p>
 
-# My first RN App
+# Weather App
 
 App built with [React Native](https://github.com/facebook/react-native) and [Expo](https://github.com/expo/expo).
 
