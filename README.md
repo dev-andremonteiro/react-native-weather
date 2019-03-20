@@ -35,7 +35,7 @@ Packages used:
 ### with Expo
 
 - Clone this repo `git clone https://github.com/dev-andremonteiro/react-native-weather`
-- `cd react-native-first-app`
+- `cd react-native-weather`
 - run `npm install`
 - run `expo start`
 
@@ -44,7 +44,7 @@ Packages used:
 **Make sure you have ExpoCLI installed `npm install -g expo-cli`**
 
 - Clone this repo `git clone https://github.com/dev-andremonteiro/react-native-weather`
-- `cd react-native-first-app`
+- `cd react-native-weather`
 - `expo eject`
 
 ## Help me Improve :)
