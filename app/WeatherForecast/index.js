@@ -10,10 +10,27 @@ import {
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { connect } from "react-redux";
-import { fetchWeatherData, pageChange } from "../../actions";
+import { fetchWeatherData, pageChange } from "../actions";
 
-const OWMIcon = require("../../../assets/owm_icon.png");
-const iconRequest = "https://openweathermap.org/img/w/";
+const OWMIcon = require("../../assets/owm_icon.png");
+const weatherIcons = {
+  "01d": require("../../assets/weather/01d.png"),
+  "01n": require("../../assets/weather/01n.png"),
+  "02d": require("../../assets/weather/02d.png"),
+  "02n": require("../../assets/weather/02n.png"),
+  "04d": require("../../assets/weather/04d.png"),
+  "04n": require("../../assets/weather/04n.png"),
+  "09d": require("../../assets/weather/09d.png"),
+  "09n": require("../../assets/weather/09n.png"),
+  "10d": require("../../assets/weather/10d.png"),
+  "10n": require("../../assets/weather/10n.png"),
+  "11d": require("../../assets/weather/11d.png"),
+  "11n": require("../../assets/weather/11n.png"),
+  "13d": require("../../assets/weather/13d.png"),
+  "13n": require("../../assets/weather/13n.png"),
+  "50d": require("../../assets/weather/50d.png"),
+  "50n": require("../../assets/weather/50n.png")
+};
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -40,7 +57,6 @@ class WeatherForecast extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      page: 0,
       bgs: []
     };
   }
@@ -52,7 +68,7 @@ class WeatherForecast extends React.Component {
     }
     this.setState({ bgs });
 
-    this.props.fetchData(this.props.cities.list[0].id);
+    this.props.fetchData(this.props.cities.list[this.props.cities.page].id);
   }
 
   transformDate(date) {
@@ -134,6 +150,7 @@ class WeatherForecast extends React.Component {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           pagingEnabled={true}
+          contentOffset={{ x: screenWidth * this.props.cities.page, y: 0 }}
           onScroll={event => {
             let x = event.nativeEvent.contentOffset.x;
             if (x > 0) {
@@ -206,7 +223,7 @@ class WeatherForecast extends React.Component {
               >
                 {this.props.cities.currentWeather.hourList.map(
                   (item2, index2) => {
-                    const iconURL = iconRequest + item2.weather[0].icon;
+                    const iconURL = item2.weather[0].icon;
                     const hourString =
                       index2 === 0
                         ? "Now"
@@ -221,7 +238,7 @@ class WeatherForecast extends React.Component {
                         <Text style={styles.text}>{hourString}</Text>
                         <Image
                           style={{ height: 24, width: 24, marginVertical: 20 }}
-                          source={{ uri: iconURL }}
+                          source={weatherIcons[iconURL]}
                         />
                         <Text style={styles.textBoldWhite}>{tempString}</Text>
                       </View>
@@ -231,7 +248,7 @@ class WeatherForecast extends React.Component {
               </ScrollView>
               <View style={styles.container}>
                 {this.props.cities.currentWeather.list.map((item3, index3) => {
-                  const iconURL = iconRequest + item3.weather[0].icon;
+                  const iconURL = item3.weather[0].icon;
                   const dayString = days[this.transformDate(item3.dt).getDay()];
 
                   return (
@@ -249,7 +266,7 @@ class WeatherForecast extends React.Component {
                         <Text style={styles.textDay}>{dayString}</Text>
                         <Image
                           style={{ height: 24, width: 24 }}
-                          source={{ uri: iconURL }}
+                          source={weatherIcons[iconURL]}
                         />
                       </View>
                       <View
@@ -279,7 +296,7 @@ class WeatherForecast extends React.Component {
               >
                 <Text style={styles.textReport}>
                   {
-                    "Hoje: Temporais isolados no momento. A temperatura é de 21º; a máxima hoje foi prevista como 28º."
+                    "Today: Heavy rain and storm. Enjoy your time and visit my github. Temperature now is 21ºC; maximum today was 28ºC."
                   }
                 </Text>
               </View>

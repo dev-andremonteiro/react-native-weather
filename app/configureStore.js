@@ -13,14 +13,8 @@ const Logger = createLogger({
   duration: true
 });
 
-export const store = createStore(
-  Reducers,
-  undefined,
-  applyMiddleware(Thunk, Logger)
-);
-/*
 const persistConfig = {
-  key: "root2",
+  key: "root3",
   storage: AsyncStorage
 };
 
@@ -33,4 +27,3 @@ export const store = createStore(
 );
 
 export const persistor = persistStore(store);
-*/

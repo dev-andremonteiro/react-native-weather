@@ -4,24 +4,16 @@ import { PersistGate } from "redux-persist/integration/react";
 import { Provider } from "react-redux";
 import { store, persistor } from "./configureStore";
 
-import Router from "./Router";
+import WeatherForecast from "./WeatherForecast";
 
-const App = () => {
-  return (
-    <Provider store={store}>
-      <Router />
-    </Provider>
-  );
-};
-
-/*
 const App = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <Router />
+        <WeatherForecast />
       </PersistGate>
     </Provider>
   );
-};*/
+};
+
 export default App;
