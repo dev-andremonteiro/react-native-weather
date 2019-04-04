@@ -1,7 +1,6 @@
-<p align="center" >
-    <img alt="react-native-weather-app" src="" width="260" height="510" />
-</p>
-
+<p align="center">
+ <img src="https://thumbs.gfycat.com/SecondaryPoorAfricanwildcat-size_restricted.gif" width="300"/>
+  </p>
 <p align="center">
 <a title='License' href="https://github.com/FaridSafi/react-native-gifted-chat/blob/master/LICENSE" height="18">
     <img src='https://img.shields.io/badge/license-MIT-blue.svg' />
@@ -14,6 +13,8 @@
 # Weather App
 
 App built with [React Native](https://github.com/facebook/react-native) and [Expo](https://github.com/expo/expo).
+
+*inspired on IOS weather app*
 
 ## Details
 
@@ -49,7 +50,7 @@ Packages used:
 
 ## Help me Improve :)
 
-Noticed a bug when using it on expo live, I think is something with scrollview pagging.
+- [ ] Bug only using it on expo live (Scrollview Pagging)
 
 ## Author
 
